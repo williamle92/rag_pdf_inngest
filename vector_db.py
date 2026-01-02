@@ -74,16 +74,19 @@ class QdrantStorage:
             query=query_vector,
             limit=top_k,
             with_payload=True,
-        )
+        ).points
 
         contexts: list[str] = []
         sources: set[str] = set()
         for result in results:
             payload: dict = getattr(result, "payload", {})
-            text: str = payload.get("text", "")
-            source: str = payload.get("source", "")
+            text: str = payload.get("text")
+            source: str = payload.get("source")
+        
             if text:
                 contexts.append(text)
+
+            if source:
                 sources.add(source)
 
         return {"contexts": contexts, "sources": list(sources)}
