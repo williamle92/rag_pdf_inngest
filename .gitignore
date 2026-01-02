@@ -10,3 +10,4 @@ wheels/
 .venv
 .gitattributes
 git-crypt-key
+qdrant_storage
