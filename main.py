@@ -4,8 +4,8 @@ import inngest
 from dotenv import load_dotenv
 import uuid
 import os
-import datetime
 
+from logging import Logger
 from inngest.fast_api import serve
 from load_data import load_and_chunk_pdf, embed_texts
 from vector_db import QdrantStorage
@@ -18,6 +18,8 @@ from serializer import (
 from inngest.experimental import ai
 
 load_dotenv()
+logger: Logger = logging.getLogger("rag-chat-bot")
+
 QDRANT_STORE: QdrantStorage = QdrantStorage()
 
 inngest_client: inngest.Inngest = inngest.Inngest(
@@ -114,6 +116,11 @@ async def query_pdf(ctx: inngest.Context) -> dict:
         query_vec: list[float] = embed_texts([question])[0]
 
         found: dict = QDRANT_STORE.search(query_vec, top_k)
+        if not found:
+            logger.warning("No results found in vector database for the given query.")
+            logger.warning(f"Question: {question}")
+            logger.info("Proceeding with empty contexts and sources.")
+    
         return RAGSearchResult(
             contexts=found.get("contexts", []), sources=found.get("sources", [])
         )
