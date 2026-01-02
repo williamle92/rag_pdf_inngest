@@ -12,11 +12,19 @@ load_dotenv()
 
 inggest_client: inngest.Inngest = inngest.Inngest(
     app_id="rag-chat-bot",
-    logging=logging.getLogger("uvicorn"),
+    logger=logging.getLogger("uvicorn"),
     is_production=False,
     serializer=inngest.PydanticSerializer(),
 )
 
+@inggest_client.create_function(
+    fn_id="Ingest PDF",
+    trigger=inngest.TriggerEvent(event="ingest_pdf"),
+)
+async def ingest_pdf(ctx: inngest.Context) -> None: 
+    return {"hello": "world"}
+
+
 app: FastAPI = FastAPI()
 
-serve(app, inggest_client, [])
+serve(app, inggest_client, [ingest_pdf])
