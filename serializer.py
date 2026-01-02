@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class RAGChunkAndSource(BaseModel):
     chunks: list[str]
-    source: str | None = None
+    source_id: str | None = None
 
 
 class RAGUpsertPayload(BaseModel):
